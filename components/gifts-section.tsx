@@ -67,7 +67,7 @@ function parseCsv(csvText: string): GiftRow[] {
   return rows
 }
 
-export function GiftsSectionClient() {
+export function GiftsSection() {
   const pathname = usePathname() ?? ""
   const slug = useMemo(() => {
     const parts = pathname.split("/").filter(Boolean)
