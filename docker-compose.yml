@@ -27,7 +27,7 @@ services:
       # Servicio backend
       # -----------------------------
       - "traefik.http.routers.fb.service=fb-svc"
-      - "traefik.http.services.fb-svc.loadbalancer.server.port=8080"
+      - "traefik.http.services.fb-svc.loadbalancer.server.port=3000"
       # -----------------------------
       # Redirect HTTP -> HTTPS (usa el middleware definido en el contenedor traefik)
       # -----------------------------
