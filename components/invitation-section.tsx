@@ -1,6 +1,7 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
+import { delimiter } from "path"
 import { useEffect, useMemo, useState } from "react"
 
 type GuestRow = {
@@ -15,7 +16,7 @@ function parseCsv(csvText: string): GuestRow[] {
     .filter(Boolean)
   if (lines.length === 0) return []
 
-  const headers = lines[0].split(",").map((h) => h.trim().toLowerCase())
+  const headers = lines[0].split(";").map((h) => h.trim().toLowerCase())
   const slugIdx = headers.indexOf("slug")
   const nameIdx = headers.indexOf("name")
   if (slugIdx === -1 || nameIdx === -1) return []
@@ -33,7 +34,7 @@ function parseCsv(csvText: string): GuestRow[] {
         inQuotes = !inQuotes
         continue
       }
-      if (ch === "," && !inQuotes) {
+      if (ch === ";" && !inQuotes) {
         values.push(current.trim())
         current = ""
         continue

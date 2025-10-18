@@ -27,7 +27,7 @@ function parseCsv(csvText: string): GiftRow[] {
     .filter(Boolean)
   if (lines.length === 0) return []
 
-  const headers = lines[0].split(",").map((h) => h.trim().toLowerCase())
+  const headers = lines[0].split(";").map((h) => h.trim().toLowerCase())
   const rows: GiftRow[] = []
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i]
@@ -40,7 +40,7 @@ function parseCsv(csvText: string): GiftRow[] {
         inQuotes = !inQuotes
         continue
       }
-      if (ch === "," && !inQuotes) {
+      if (ch === ";" && !inQuotes) {
         values.push(current.trim())
         current = ""
         continue
@@ -136,13 +136,13 @@ export function GiftsSection() {
                       key={gift.slug}
                       className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
-                      <CardHeader>
+                      <CardHeader className="flex flex-col items-center justify-center text-center">
                         <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
                           🛍️
                         </div>
-                        <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
+                        <CardTitle className="text-3xl text-foreground">{gift.title}</CardTitle>
                       </CardHeader>
-                      <CardContent>
+                      <CardContent className="text-center">
                         <p className="text-muted-foreground text-pretty">{gift.description}</p>
                       </CardContent>
                     </Card>
