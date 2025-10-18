@@ -1,12 +1,12 @@
 services:
-  web:
+  invitacion:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         NODE_VERSION: 22.20.0
         PNPM_VERSION: 10.17.1      
-    image: brota/next-web:latest
+    image: brota/next-invitacion:latest
     container_name: brota_landing
     environment:
       NODE_ENV: production
