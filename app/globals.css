@@ -4,30 +4,31 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Updated color palette for Charmander (orange) and Squirtle (cyan) theme */
   --background: oklch(0.99 0.01 85);
-  --foreground: oklch(0.35 0.05 280);
+  --foreground: oklch(0.25 0.05 240);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.35 0.05 280);
+  --card-foreground: oklch(0.25 0.05 240);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.75 0.15 320);
+  --primary: oklch(0.72 0.18 35); /* Orange coral #FF8E5A */
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.88 0.08 85);
-  --secondary-foreground: oklch(0.35 0.05 280);
-  --muted: oklch(0.95 0.02 85);
-  --muted-foreground: oklch(0.55 0.05 280);
-  --accent: oklch(0.82 0.12 180);
-  --accent-foreground: oklch(0.35 0.05 280);
+  --secondary: oklch(0.95 0.02 200);
+  --secondary-foreground: oklch(0.25 0.05 240);
+  --muted: oklch(0.96 0.01 200);
+  --muted-foreground: oklch(0.5 0.05 240);
+  --accent: oklch(0.8 0.15 210); /* Cyan blue #5BD8FF */
+  --accent-foreground: oklch(0.15 0.05 240);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.02 85);
-  --input: oklch(0.92 0.02 85);
-  --ring: oklch(0.75 0.15 320);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --border: oklch(0.92 0.02 200);
+  --input: oklch(0.92 0.02 200);
+  --ring: oklch(0.72 0.18 35);
+  --chart-1: oklch(0.72 0.18 35);
+  --chart-2: oklch(0.8 0.15 210);
+  --chart-3: oklch(0.85 0.12 50);
+  --chart-4: oklch(0.75 0.14 190);
+  --chart-5: oklch(0.7 0.16 25);
   --radius: 1rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -120,5 +121,94 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1.5s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 1s ease-out forwards;
+  }
+
+  .animate-bounce-slow {
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+  }
+
+  .animation-delay-600 {
+    animation-delay: 0.6s;
+  }
+
+  .animation-delay-800 {
+    animation-delay: 0.8s;
   }
 }

@@ -1,70 +1,64 @@
-import { Baby, Heart, Sparkles } from "lucide-react"
-
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-secondary overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 left-10 w-20 h-20 bg-primary/20 rounded-full blur-2xl animate-pulse" />
-        <div className="absolute top-40 right-20 w-32 h-32 bg-accent/20 rounded-full blur-3xl animate-pulse delay-700" />
-        <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-primary/20 rounded-full blur-2xl animate-pulse delay-1000" />
+    <section className="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-primary/20 via-accent/20 to-primary/10">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 text-6xl animate-float opacity-20">🔥</div>
+        <div className="absolute top-20 right-20 text-6xl animate-float animation-delay-400 opacity-20">💧</div>
+        <div className="absolute bottom-20 left-20 text-6xl animate-float animation-delay-600 opacity-20">⚡</div>
+        <div className="absolute bottom-10 right-10 text-6xl animate-float animation-delay-200 opacity-20">✨</div>
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-16 text-center">
-        {/* Icon decoration */}
-        <div className="flex justify-center gap-4 mb-8 animate-fade-in">
-          <Sparkles className="w-8 h-8 text-primary animate-bounce" />
-          <Baby className="w-12 h-12 text-primary" />
-          <Sparkles className="w-8 h-8 text-primary animate-bounce delay-300" />
-        </div>
-
-        {/* Main heading */}
-        <h1 className="text-5xl md:text-7xl font-bold text-primary mb-6 animate-fade-in-up text-balance">
-          ¡Celebremos Juntos!
-        </h1>
-
-        {/* Subheading */}
-        <div className="space-y-4 mb-8 animate-fade-in-up delay-200">
-          <p className="text-2xl md:text-3xl text-foreground font-medium">Baby Shower</p>
-          <div className="flex items-center justify-center gap-2">
-            <Heart className="w-6 h-6 text-primary fill-primary" />
-            <p className="text-xl md:text-2xl text-muted-foreground">Un nuevo bebé está en camino</p>
-            <Heart className="w-6 h-6 text-primary fill-primary" />
+      <div className="relative z-10 flex flex-col flex-1">
+        {/* Título */}
+        <div className="text-center py-8 opacity-0 animate-fade-in-up">
+          <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent drop-shadow-lg">
+            Baby Shower Pokémon
+          </h1>
+          <div className="flex justify-center gap-3 mt-4">
+            <span className="text-4xl animate-bounce-slow">🔥</span>
+            <span className="text-4xl animate-bounce-slow animation-delay-200">💧</span>
           </div>
         </div>
 
-        {/* Event details */}
-        <div className="bg-card rounded-2xl shadow-xl p-8 md:p-12 max-w-2xl mx-auto animate-fade-in-up delay-300">
-          <div className="space-y-6 text-lg md:text-xl">
-            <div>
-              <p className="text-muted-foreground mb-2">En honor a</p>
-              <p className="text-2xl md:text-3xl font-semibold text-primary">Thiago andres peralta rey</p>
-            </div>
+        {/* Espacio */}
+        <div className="h-8"></div>
 
-            <div className="h-px bg-border" />
+        <div className="flex-1 flex items-center justify-center opacity-0 animate-scale-in animation-delay-200">
+          <div className="w-full max-w-2xl">
+            <img
+              src="/pokemon-baby-shower-charmander-squirtle-invitation.jpg"
+              alt="Baby Shower Pokémon"
+              className="w-full h-auto object-contain"
+              style={{ aspectRatio: "900/1028" }}
+            />
+          </div>
+        </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-muted-foreground mb-2">Fecha</p>
-                <p className="font-semibold text-foreground">[23, Octubre 2025]</p>
+        {/* Fecha del evento */}
+        <div className="text-center py-8 opacity-0 animate-fade-in-up animation-delay-400">
+          <div className="inline-block bg-white/95 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-2xl border-4 border-white">
+            <div className="flex items-center gap-4">
+              <span className="text-4xl">📅</span>
+              <div className="text-left">
+                <p className="text-sm text-muted-foreground font-medium">Fecha del Evento</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  [Fecha y Hora]
+                </p>
               </div>
-              <div>
-                <p className="text-muted-foreground mb-2">Hora</p>
-                <p className="font-semibold text-foreground">[3:00 PM]</p>
-              </div>
-            </div>
-
-            <div className="h-px bg-border" />
-
-            <div>
-              <p className="text-muted-foreground mb-2">Lugar</p>
-              <p className="font-semibold text-foreground text-pretty">[Dirección del evento]</p>
             </div>
           </div>
         </div>
 
-        {/* RSVP message */}
-        <p className="mt-8 text-muted-foreground animate-fade-in-up delay-500">Por favor confirma tu asistencia</p>
+        {/* Desliza para más información */}
+        <div className="text-center pb-8 opacity-0 animate-fade-in animation-delay-600">
+          <div className="inline-flex flex-col items-center gap-2 text-foreground/70 animate-bounce-slow">
+            <span className="text-sm font-medium">Desliza para más información</span>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </div>
     </section>
   )

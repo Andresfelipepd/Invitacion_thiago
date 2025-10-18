@@ -12,24 +12,22 @@ export function LocationSection() {
   return (
     <section className="py-20 px-4 bg-secondary">
       <div className="max-w-6xl mx-auto">
-        {/* Section header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6">
-            <MapPin className="w-8 h-8 text-primary" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full mb-6 text-4xl">
+            🗺️
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">¿Cómo Llegar?</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-            Encuentra la mejor ruta para llegar al evento
+            Encuentra la mejor ruta para llegar a esta aventura Pokémon
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Location details */}
-          <Card className="border-2">
+          <Card className="border-2 border-primary/20">
             <CardContent className="p-8">
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg flex items-center justify-center">
                     <MapPin className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -39,8 +37,8 @@ export function LocationSection() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-primary" />
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-accent" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg text-foreground mb-2">Horario</h3>
@@ -49,7 +47,7 @@ export function LocationSection() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg flex items-center justify-center">
                     <Phone className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -69,7 +67,7 @@ export function LocationSection() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full border-2 bg-transparent"
+                    className="w-full border-2 border-accent hover:bg-accent/10 bg-transparent"
                     size="lg"
                     onClick={() => window.open(wazeUrl, "_blank")}
                   >
@@ -81,8 +79,7 @@ export function LocationSection() {
             </CardContent>
           </Card>
 
-          {/* Map placeholder */}
-          <Card className="border-2 overflow-hidden">
+          <Card className="border-2 border-accent/20 overflow-hidden">
             <CardContent className="p-0 h-full min-h-[400px]">
               <div className="relative w-full h-full bg-muted flex items-center justify-center">
                 <iframe
@@ -100,12 +97,11 @@ export function LocationSection() {
           </Card>
         </div>
 
-        {/* Additional info */}
         <div className="mt-12 text-center">
           <Card className="inline-block border-2 border-primary/20 bg-card">
             <CardContent className="px-8 py-6">
               <p className="text-foreground font-medium text-lg text-balance">
-                🚗 Estacionamiento disponible • ♿ Acceso para sillas de ruedas
+                🚗 Estacionamiento disponible • ♿ Acceso para todos los entrenadores
               </p>
             </CardContent>
           </Card>
