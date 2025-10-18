@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: "Baby Shower Thiago",
     images: [
       {
-        url: "https://babyshower.brota.tech/banner-preview.jpg", // 👈 URL completa de la imagen
+        url: "https://cloud.brota.tech/s/NkRxPnaDJW2nbYk", // 👈 URL completa de la imagen
         width: 1200,
         height: 630,
         alt: "Invitación Baby Shower Thiago",
