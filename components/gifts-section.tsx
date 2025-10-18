@@ -1,6 +1,6 @@
 "use client"
 
-import { usePathname } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -27,11 +27,9 @@ function parseCsv(csvText: string): GiftRow[] {
     .filter(Boolean)
   if (lines.length === 0) return []
 
-  // header
   const headers = lines[0].split(",").map((h) => h.trim().toLowerCase())
   const rows: GiftRow[] = []
   for (let i = 1; i < lines.length; i++) {
-    // naive CSV split that tolerates commas inside quotes
     const line = lines[i]
     const values: string[] = []
     let current = ""
@@ -68,11 +66,9 @@ function parseCsv(csvText: string): GiftRow[] {
 }
 
 export function GiftsSection() {
-  const pathname = usePathname() ?? ""
-  const slug = useMemo(() => {
-    const parts = pathname.split("/").filter(Boolean)
-    return parts.length ? parts[parts.length - 1] : ""
-  }, [pathname])
+  const search = useSearchParams()
+  const slugParam = search?.get("gift") ?? "" // lee ?gift=slug
+  const slug = useMemo(() => slugParam.trim(), [slugParam])
 
   const [gifts, setGifts] = useState<GiftRow[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -100,7 +96,6 @@ export function GiftsSection() {
     }
   }, [])
 
-  // decide what to render: match by slug, or render all suggestions if no slug
   const matched = useMemo(() => {
     if (!gifts) return null
     if (!slug) return gifts
@@ -118,49 +113,42 @@ export function GiftsSection() {
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">Regalo</h2>
         </div>
 
-        {error && (
-          <div className="mb-4 text-sm text-yellow-600">
-            {error}
-          </div>
-        )}
+        {error && <div className="mb-4 text-sm text-yellow-600">{error}</div>}
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {matched === null ? (
-            // no match: show all suggestions (or loading)
-            (gifts ?? fallbackGifts).map((gift) => (
-              <Card
-                key={gift.slug}
-                className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
-              >
-                <CardHeader>
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
-                    {gift.emoji ?? "🎁"}
-                  </div>
-                  <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-pretty">{gift.description}</p>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            matched.map((gift) => (
-              <Card
-                key={gift.slug}
-                className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
-              >
-                <CardHeader>
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
-                    {gift.emoji ?? "🎁"}
-                  </div>
-                  <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-pretty">{gift.description}</p>
-                </CardContent>
-              </Card>
-            ))
-          )}
+          {matched === null
+            ? (gifts ?? fallbackGifts).map((gift) => (
+                <Card
+                  key={gift.slug}
+                  className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
+                >
+                  <CardHeader>
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
+                      {gift.emoji ?? "🎁"}
+                    </div>
+                    <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-pretty">{gift.description}</p>
+                  </CardContent>
+                </Card>
+              ))
+            : matched.map((gift) => (
+                <Card
+                  key={gift.slug}
+                  className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
+                >
+                  <CardHeader>
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
+                      {gift.emoji ?? "🎁"}
+                    </div>
+                    <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-pretty">{gift.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
         </div>
 
         <div className="mt-12 text-center">
