@@ -71,10 +71,12 @@ export function GiftsSection() {
   const slug = useMemo(() => slugParam.trim(), [slugParam])
 
   const [gifts, setGifts] = useState<GiftRow[] | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let mounted = true
+    setLoading(true)
     fetch("/gifts.csv")
       .then(async (res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -84,23 +86,29 @@ export function GiftsSection() {
       .then((rows) => {
         if (!mounted) return
         setGifts(rows.length ? rows : fallbackGifts)
+        setError(null)
       })
       .catch((err) => {
         console.error("Failed to load gifts.csv:", err)
         if (!mounted) return
-        setError("No se pudo cargar lista de regalos, usando valores por defecto.")
+        setError("No se pudo cargar la lista de regalos; mostrando valores por defecto.")
         setGifts(fallbackGifts)
+      })
+      .finally(() => {
+        if (!mounted) return
+        setLoading(false)
       })
     return () => {
       mounted = false
     }
   }, [])
 
+  // Búsqueda por slug: si slug existe, devolvemos solo el match (o vacío si no existe)
   const matched = useMemo(() => {
     if (!gifts) return null
-    if (!slug) return gifts
+    if (!slug) return null // sin slug, no devolvemos matched — renderizamos "all"
     const found = gifts.filter((g) => g.slug === slug)
-    return found.length ? found : null
+    return found // puede ser [] si no encontró nada
   }, [gifts, slug])
 
   return (
@@ -110,46 +118,64 @@ export function GiftsSection() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full mb-6 text-4xl">
             🎁
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">Regalo</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">Regalo Sugerido</h2>
         </div>
 
-        {error && <div className="mb-4 text-sm text-yellow-600">{error}</div>}
+        {loading ? (
+          <div className="text-center py-12 text-muted-foreground">Cargando regalos…</div>
+        ) : (
+          <>
+            {error && <div className="mb-4 text-sm text-yellow-600">{error}</div>}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {matched === null
-            ? (gifts ?? fallbackGifts).map((gift) => (
-                <Card
-                  key={gift.slug}
-                  className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
-                >
-                  <CardHeader>
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
-                      {gift.emoji ?? "🎁"}
-                    </div>
-                    <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground text-pretty">{gift.description}</p>
-                  </CardContent>
-                </Card>
-              ))
-            : matched.map((gift) => (
-                <Card
-                  key={gift.slug}
-                  className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
-                >
-                  <CardHeader>
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
-                      {gift.emoji ?? "🎁"}
-                    </div>
-                    <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground text-pretty">{gift.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-        </div>
+            {/* Si hay slug: mostrar solo el match (o mensaje si no existe) */}
+            {slug ? (
+              matched && matched.length > 0 ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {matched.map((gift) => (
+                    <Card
+                      key={gift.slug}
+                      className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
+                    >
+                      <CardHeader>
+                        <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
+                          🛍️
+                        </div>
+                        <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground text-pretty">{gift.description}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  No se encontró ningún regalo para <strong>{slug}</strong>
+                </div>
+              )
+            ) : (
+              /* Sin slug: mostrar todas las sugerencias */
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {(gifts ?? fallbackGifts).map((gift) => (
+                  <Card
+                    key={gift.slug}
+                    className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
+                  >
+                    <CardHeader>
+                      <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
+                        {gift.emoji ?? "🎁"}
+                      </div>
+                      <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground text-pretty">{gift.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </>
+        )}
 
         <div className="mt-12 text-center">
           <div className="inline-block bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-2xl px-8 py-6 max-w-2xl border-2 border-primary/20">
