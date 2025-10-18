@@ -67,7 +67,7 @@ function parseCsv(csvText: string): GiftRow[] {
 
 export function GiftsSection() {
   const search = useSearchParams()
-  const slugParam = search?.get("gift") ?? "" // lee ?gift=slug
+  const slugParam = search?.get("slug") ?? "" // lee ?gift=slug
   const slug = useMemo(() => slugParam.trim(), [slugParam])
 
   const [gifts, setGifts] = useState<GiftRow[] | null>(null)
