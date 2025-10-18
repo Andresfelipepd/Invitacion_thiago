@@ -6,33 +6,15 @@ const giftSuggestions = [
     icon: Shirt,
     title: "Ropa Pokémon",
     description: "Bodys, pijamas con diseños de Charmander y Squirtle (tallas 0-6 meses)",
-    emoji: "👕",
-  },
-  {
-    icon: Gift,
-    title: "Juguetes Pokémon",
-    description: "Peluches de Pokémon, sonajeros, móviles para cuna temáticos",
-    emoji: "🧸",
-  },
-  {
-    icon: ShoppingBag,
-    title: "Artículos de Cuidado",
-    description: "Pañales, toallitas, cremas, productos de baño para el pequeño entrenador",
-    emoji: "🍼",
-  },
-  {
-    icon: Heart,
-    title: "Lo que Prefieras",
-    description: "Tu presencia es el mejor regalo para esta aventura",
-    emoji: "💝",
-  },
+    emoji: "🎁",
+  }
 ]
 
 export function GiftsSection() {
   return (
     <section className="py-20 px-4 bg-background">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
+        {/* <div className="text-center mb-16">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full mb-6 text-4xl">
             🎁
           </div>
@@ -40,7 +22,7 @@ export function GiftsSection() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
             Si deseas traer un regalo para el futuro entrenador Pokémon, aquí hay algunas ideas
           </p>
-        </div>
+        </div> */}
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {giftSuggestions.map((gift, index) => (
@@ -50,7 +32,7 @@ export function GiftsSection() {
             >
               <CardHeader>
                 <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
-                  {gift.emoji}
+                  🎁
                 </div>
                 <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
               </CardHeader>
@@ -64,7 +46,7 @@ export function GiftsSection() {
         <div className="mt-12 text-center">
           <div className="inline-block bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-2xl px-8 py-6 max-w-2xl border-2 border-primary/20">
             <p className="text-foreground font-medium text-lg text-balance">
-              ⚡ Recuerda: Tu presencia es lo más importante. Los regalos son opcionales. ⚡
+              ⚡ Recuerda: Nada nos haria mas felices que compartir este dia contigo. te esperamos ⚡
             </p>
           </div>
         </div>

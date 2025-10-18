@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 export function LocationSection() {
-  const address = "[Dirección completa del evento]"
+  const address = "Cra. 68f #65-01"
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
   const wazeUrl = `https://waze.com/ul?q=${encodeURIComponent(address)}`
 
@@ -17,9 +17,6 @@ export function LocationSection() {
             🗺️
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">¿Cómo Llegar?</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-            Encuentra la mejor ruta para llegar a esta aventura Pokémon
-          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -42,7 +39,7 @@ export function LocationSection() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg text-foreground mb-2">Horario</h3>
-                    <p className="text-muted-foreground">[Día] a las [Hora]</p>
+                    <p className="text-muted-foreground">23 de noviembre a las 3:00 PM</p>
                   </div>
                 </div>
 
@@ -52,7 +49,7 @@ export function LocationSection() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg text-foreground mb-2">Contacto</h3>
-                    <p className="text-muted-foreground">[Teléfono]</p>
+                    <p className="text-muted-foreground">302 8332165 - 300 2807633</p>
                   </div>
                 </div>
 
@@ -101,7 +98,7 @@ export function LocationSection() {
           <Card className="inline-block border-2 border-primary/20 bg-card">
             <CardContent className="px-8 py-6">
               <p className="text-foreground font-medium text-lg text-balance">
-                🚗 Estacionamiento disponible • ♿ Acceso para todos los entrenadores
+                🚗 Estacionamiento disponible
               </p>
             </CardContent>
           </Card>
