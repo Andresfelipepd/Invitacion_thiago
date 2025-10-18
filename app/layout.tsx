@@ -8,11 +8,25 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Baby Shower - ¡Celebremos Juntos!",
-  description: "Invitación digital para baby shower",
-  generator: "v0.app",
+  title: "Baby Shower de Thiago - ¡Celebremos Juntos!",
+  description: "Invitación para celebrar el baby shower de Thiago con nosotros 💙",
+  openGraph: {
+    title: "Baby Shower de Thiago - ¡Celebremos Juntos!",
+    description: "Invitación especial para el baby shower de Thiago 💙",
+    url: "https://babyshower.brota.tech",
+    siteName: "Baby Shower Thiago",
+    images: [
+      {
+        url: "https://babyshower.brota.tech/banner-preview.jpg", // 👈 URL completa de la imagen
+        width: 1200,
+        height: 630,
+        alt: "Invitación Baby Shower Thiago",
+      },
+    ],
+    locale: "es_CO",
+    type: "website",
+  }
 }
-
 export default function RootLayout({
   children,
 }: Readonly<{

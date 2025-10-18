@@ -1,0 +1,43 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: 22.20.0
+        PNPM_VERSION: 10.17.1      
+    image: brota/next-web:latest
+    container_name: brota_landing
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      # -----------------------------
+      # Router principal (HTTPS)
+      # -----------------------------
+      - "traefik.http.routers.thiago.rule=Host(`thiago.brota.tech`)"
+      - "traefik.http.routers.thiago.entrypoints=websecure"
+      - "traefik.http.routers.thiago.tls=true"
+      - "traefik.http.routers.thiago.tls.certresolver=myresolver"
+      # -----------------------------
+      # Servicio backend
+      # -----------------------------
+      - "traefik.http.routers.thiago.service=thiago-svc"
+      - "traefik.http.services.thiago-svc.loadbalancer.server.port=8080"
+      # -----------------------------
+      # Redirect HTTP -> HTTPS (usa el middleware definido en el contenedor traefik)
+      # -----------------------------
+      - "traefik.http.routers.thiago-redirect.rule=Host(`thiago.brota.tech`)"
+      - "traefik.http.routers.thiago-redirect.entrypoints=web"
+      - "traefik.http.routers.thiago-redirect.middlewares=redirect-to-https@docker"
+      # -----------------------------
+      # Indica la network que Traefik debe usar para reachability (opcional/útil)
+      # -----------------------------
+      - "traefik.docker.network=proxy"
+networks:
+  proxy:
+    external: true
