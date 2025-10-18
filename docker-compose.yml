@@ -19,21 +19,21 @@ services:
       # -----------------------------
       # Router principal (HTTPS)
       # -----------------------------
-      - "traefik.http.routers.thiago.rule=Host(`thiago.brota.tech`)"
-      - "traefik.http.routers.thiago.entrypoints=websecure"
-      - "traefik.http.routers.thiago.tls=true"
-      - "traefik.http.routers.thiago.tls.certresolver=myresolver"
+      - "traefik.http.routers.fb.rule=Host(`fb.brota.tech`)"
+      - "traefik.http.routers.fb.entrypoints=websecure"
+      - "traefik.http.routers.fb.tls=true"
+      - "traefik.http.routers.fb.tls.certresolver=myresolver"
       # -----------------------------
       # Servicio backend
       # -----------------------------
-      - "traefik.http.routers.thiago.service=thiago-svc"
-      - "traefik.http.services.thiago-svc.loadbalancer.server.port=8080"
+      - "traefik.http.routers.fb.service=fb-svc"
+      - "traefik.http.services.fb-svc.loadbalancer.server.port=8080"
       # -----------------------------
       # Redirect HTTP -> HTTPS (usa el middleware definido en el contenedor traefik)
       # -----------------------------
-      - "traefik.http.routers.thiago-redirect.rule=Host(`thiago.brota.tech`)"
-      - "traefik.http.routers.thiago-redirect.entrypoints=web"
-      - "traefik.http.routers.thiago-redirect.middlewares=redirect-to-https@docker"
+      - "traefik.http.routers.fb-redirect.rule=Host(`fb.brota.tech`)"
+      - "traefik.http.routers.fb-redirect.entrypoints=web"
+      - "traefik.http.routers.fb-redirect.middlewares=redirect-to-https@docker"
       # -----------------------------
       # Indica la network que Traefik debe usar para reachability (opcional/útil)
       # -----------------------------
