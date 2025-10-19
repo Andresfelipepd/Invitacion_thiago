@@ -11,171 +11,148 @@ type GiftRow = {
   emoji?: string
 }
 
+type GuestApi = {
+  slug: string
+  name: string
+  regalo?: string
+  confirmed?: boolean
+}
+
 const fallbackGifts: GiftRow[] = [
   {
     slug: "default-ropa",
-    title: "Ropa Pokémon",
-    description: "Bodys, pijamas con diseños de Charmander y Squirtle (tallas 0-6 meses)",
+    title: "Ropa",
+    description: "Bodys o pijamas (tallas 0-6 meses)",
     emoji: "🎁",
+  },
+  {
+    slug: "default-libro",
+    title: "Libro infantil",
+    description: "Libros de cuentos para bebés",
+    emoji: "📚",
   },
 ]
 
-function parseCsv(csvText: string): GiftRow[] {
-  const lines = csvText
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter(Boolean)
-  if (lines.length === 0) return []
-
-  const headers = lines[0].split(";").map((h) => h.trim().toLowerCase())
-  const rows: GiftRow[] = []
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i]
-    const values: string[] = []
-    let current = ""
-    let inQuotes = false
-    for (let j = 0; j < line.length; j++) {
-      const ch = line[j]
-      if (ch === '"' && line[j - 1] !== "\\") {
-        inQuotes = !inQuotes
-        continue
-      }
-      if (ch === ";" && !inQuotes) {
-        values.push(current.trim())
-        current = ""
-        continue
-      }
-      current += ch
-    }
-    values.push(current.trim())
-
-    const obj: any = {}
-    headers.forEach((h, idx) => {
-      obj[h] = (values[idx] ?? "").replace(/\\"/g, '"')
-    })
-    if (obj.slug && obj.title) {
-      rows.push({
-        slug: obj.slug,
-        title: obj.title,
-        description: obj.description ?? "",
-        emoji: obj.emoji ?? "",
-      })
-    }
-  }
-  return rows
-}
-
 export function GiftsSection() {
   const search = useSearchParams()
-  const slugParam = search?.get("slug") ?? "" // lee ?gift=slug
-  const slug = useMemo(() => slugParam.trim(), [slugParam])
+  const slugParam = search?.get("slug") ?? ""
+  const slug = useMemo(() => slugParam.trim().toLowerCase(), [slugParam])
 
-  const [gifts, setGifts] = useState<GiftRow[] | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
+  const [guest, setGuest] = useState<GuestApi | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let mounted = true
-    setLoading(true)
-    fetch("/gifts.csv")
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const txt = await res.text()
-        return parseCsv(txt)
-      })
-      .then((rows) => {
+    async function fetchGuest(s: string) {
+      if (!s) {
         if (!mounted) return
-        setGifts(rows.length ? rows : fallbackGifts)
+        setGuest(null)
         setError(null)
-      })
-      .catch((err) => {
-        console.error("Failed to load gifts.csv:", err)
+        setLoading(false)
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+      setGuest(null)
+
+      try {
+        const res = await fetch(`/api/guest?slug=${encodeURIComponent(s)}`, {
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",
+        })
+
+        const text = await res.text()
+        let json: any = {}
+        if (text) {
+          try {
+            json = JSON.parse(text)
+          } catch {
+            throw new Error("Respuesta inválida del servidor")
+          }
+        }
+
+        if (!res.ok) {
+          const msg = (json && (json.message || JSON.stringify(json))) || `HTTP ${res.status}`
+          throw new Error(String(msg))
+        }
+
+        if (json.ok && json.guest) {
+          if (!mounted) return
+          setGuest(json.guest as GuestApi)
+        } else {
+          if (!mounted) return
+          setError("No se encontró el invitado.")
+          setGuest(null)
+        }
+      } catch (err: any) {
         if (!mounted) return
-        setError("No se pudo cargar la lista de regalos; mostrando valores por defecto.")
-        setGifts(fallbackGifts)
-      })
-      .finally(() => {
+        console.error("Failed to fetch guest:", err)
+        setError(err?.message ?? String(err))
+        setGuest(null)
+      } finally {
         if (!mounted) return
         setLoading(false)
-      })
+      }
+    }
+
+    fetchGuest(slug)
+
     return () => {
       mounted = false
     }
-  }, [])
+  }, [slug])
 
-  // Búsqueda por slug: si slug existe, devolvemos solo el match (o vacío si no existe)
-  const matched = useMemo(() => {
-    if (!gifts) return null
-    if (!slug) return null // sin slug, no devolvemos matched — renderizamos "all"
-    const found = gifts.filter((g) => g.slug === slug)
-    return found // puede ser [] si no encontró nada
-  }, [gifts, slug])
+  const computedTitle = loading
+    ? "Cargando..."
+    : guest?.regalo
+    ? guest.regalo
+    : "Regalo Sugerido"
 
   return (
     <section className="py-20 px-4 bg-background">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full mb-6 text-4xl">
-            🎁
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">Regalo Sugerido</h2>
+      <div className="max-w-3xl mx-auto text-center">
+        <div className="flex justify-center gap-4 mb-8 text-5xl">
+          <span>🎁</span>
         </div>
 
-        {loading ? (
-          <div className="text-center py-12 text-muted-foreground">Cargando regalos…</div>
-        ) : (
-          <>
-            {error && <div className="mb-4 text-sm text-yellow-600">{error}</div>}
+        <h2 className="text-4xl md:text-4xl font-bold mb-12 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent text-balance">
+          Regalo sugerido
+        </h2>
 
-            {/* Si hay slug: mostrar solo el match (o mensaje si no existe) */}
-            {slug ? (
-              matched && matched.length > 0 ? (
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {matched.map((gift) => (
-                    <Card
-                      key={gift.slug}
-                      className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
-                    >
-                      <CardHeader className="flex flex-col items-center justify-center text-center">
-                        <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
-                          🛍️
-                        </div>
-                        <CardTitle className="text-3xl text-foreground">{gift.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent className="text-center">
-                        <p className="text-muted-foreground text-pretty">{gift.description}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  No se encontró ningún regalo para <strong>{slug}</strong>
-                </div>
-              )
-            ) : (
-              /* Sin slug: mostrar todas las sugerencias */
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {(gifts ?? fallbackGifts).map((gift) => (
-                  <Card
-                    key={gift.slug}
-                    className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105"
-                  >
-                    <CardHeader>
-                      <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
-                        {gift.emoji ?? "🎁"}
-                      </div>
-                      <CardTitle className="text-xl text-foreground">{gift.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground text-pretty">{gift.description}</p>
-                    </CardContent>
-                  </Card>
-                ))}
+        <div className="bg-card rounded-2xl shadow-xl border-4 border-primary/20 py-12 md:p-12">
+          {loading ? (
+            <div className="py-8 text-muted-foreground">Cargando regalo…</div>
+          ) : guest?.regalo ? (
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full flex items-center justify-center mb-6 text-4xl">
+                🛍️
               </div>
-            )}
-          </>
-        )}
+              <p className="text-2xl font-semibold text-foreground">{guest.regalo}</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {fallbackGifts.map((regalo) => (
+                <Card key={regalo.slug} className="w-full">
+                  <CardHeader className="flex flex-col items-center justify-center text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center mb-4 text-3xl">
+                      🛍️
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-foreground">
+                      {regalo.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="text-muted-foreground">{regalo.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {error && <div className="mt-4 text-sm text-rose-600">{error}</div>}
+        </div>
 
         <div className="mt-12 text-center">
           <div className="inline-block bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-2xl px-8 py-6 max-w-2xl border-2 border-primary/20">

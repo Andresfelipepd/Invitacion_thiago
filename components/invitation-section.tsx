@@ -1,7 +1,6 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
-import { delimiter } from "path"
 import { useEffect, useMemo, useState } from "react"
 
 type GuestRow = {
@@ -9,47 +8,10 @@ type GuestRow = {
   name: string
 }
 
-function parseCsv(csvText: string): GuestRow[] {
-  const lines = csvText
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter(Boolean)
-  if (lines.length === 0) return []
-
-  const headers = lines[0].split(";").map((h) => h.trim().toLowerCase())
-  const slugIdx = headers.indexOf("slug")
-  const nameIdx = headers.indexOf("name")
-  if (slugIdx === -1 || nameIdx === -1) return []
-
-  const rows: GuestRow[] = []
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i]
-    // simple CSV parser that tolerates quoted values with commas
-    const values: string[] = []
-    let current = ""
-    let inQuotes = false
-    for (let j = 0; j < line.length; j++) {
-      const ch = line[j]
-      if (ch === '"' && line[j - 1] !== "\\") {
-        inQuotes = !inQuotes
-        continue
-      }
-      if (ch === ";" && !inQuotes) {
-        values.push(current.trim())
-        current = ""
-        continue
-      }
-      current += ch
-    }
-    values.push(current.trim())
-
-    const slug = values[slugIdx] ?? ""
-    const name = values[nameIdx] ?? ""
-    if (slug) {
-      rows.push({ slug: slug.replace(/^"|"$/g, ""), name: name.replace(/^"|"$/g, "") })
-    }
-  }
-  return rows
+type ApiResponse = {
+  ok?: boolean
+  guest?: GuestRow | null
+  message?: string
 }
 
 export function InvitationSectionClient() {
@@ -57,46 +19,83 @@ export function InvitationSectionClient() {
   const rawSlug = search?.get("slug") ?? ""
   const slug = useMemo(() => rawSlug.trim().toLowerCase(), [rawSlug])
 
-  const [guests, setGuests] = useState<GuestRow[] | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
+  const [guest, setGuest] = useState<GuestRow | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let mounted = true
-    setLoading(true)
-    fetch("/gifts.csv")
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const txt = await res.text()
-        return parseCsv(txt)
-      })
-      .then((rows) => {
+
+    async function fetchGuest(s: string) {
+      if (!s) {
         if (!mounted) return
-        setGuests(rows)
+        setGuest(null)
         setError(null)
-      })
-      .catch((err) => {
-        console.error("Failed to load guests.csv:", err)
+        setLoading(false)
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+      setGuest(null)
+
+      try {
+        const res = await fetch(`/api/guest?slug=${encodeURIComponent(s)}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        const text = await res.text()
+        let json: ApiResponse = {}
+        if (text) {
+          try {
+            json = JSON.parse(text)
+          } catch (e) {
+            throw new Error("Respuesta no válida del servidor")
+          }
+        }
+
+        if (!res.ok) {
+          const msg = (json && (json.message || JSON.stringify(json))) || `HTTP ${res.status}`
+          throw new Error(String(msg))
+        }
+
+        const found = json.guest ?? null
         if (!mounted) return
-        setError("No se pudo cargar la lista de invitados.")
-        setGuests([])
-      })
-      .finally(() => {
+        if (found) {
+          setGuest(found)
+          setError(null)
+        } else {
+          setGuest(null)
+          setError("No se encontró el invitado.")
+        }
+      } catch (err: any) {
+        if (!mounted) return
+        console.error("fetch guest error", err)
+        setError(err?.message ?? String(err))
+        setGuest(null)
+      } finally {
         if (!mounted) return
         setLoading(false)
-      })
+      }
+    }
+
+    fetchGuest(slug)
+
     return () => {
       mounted = false
     }
-  }, [])
+  }, [slug])
 
-  // busca por slug (insensible a mayúsculas)
-  const matched = useMemo(() => {
-    if (!guests || !slug) return null
-    return guests.find((g) => g.slug.trim().toLowerCase() === slug) ?? null
-  }, [guests, slug])
-
-  const title = matched ? `¡Hola, ${matched.name}!` : !slug ? "¡Queremos Invitarte!" : `No encontramos a "${slug}"`
+  const title = loading
+    ? "Cargando..."
+    : guest
+    ? `¡Hola, ${guest.name}!`
+    : !slug
+    ? "¡Queremos Invitarte!"
+    : `No encontramos a "${slug}"`
 
   return (
     <section className="py-20 px-4 bg-background">
@@ -106,7 +105,7 @@ export function InvitationSectionClient() {
         </div>
 
         <h2 className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent text-balance">
-          {loading ? "Cargando..." : title}
+          {title}
         </h2>
 
         <div className="bg-card rounded-2xl shadow-xl border-4 border-primary/20 p-8 md:p-12">
@@ -129,6 +128,7 @@ export function InvitationSectionClient() {
             </div>
           </div>
         </div>
+
         {error && <div className="mt-4 text-sm text-rose-600">{error}</div>}
       </div>
     </section>
